@@ -1,0 +1,10 @@
+server:
+   port: 9100
+spring:
+   servlet:
+      multipart:
+          enabled: true
+          location: ${java.io.tmpdir}
+          max-file-size: 1Mb
+storage:
+   location: ${java.io.tmpdir}
