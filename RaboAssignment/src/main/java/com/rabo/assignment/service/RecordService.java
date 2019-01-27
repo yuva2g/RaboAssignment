@@ -58,15 +58,12 @@ public class RecordService implements IRecordService {
 			if (null != transRecords && !transRecords.isEmpty()) {
 				Set<Long> uniqueRefSet = new HashSet<>(transRecords.size());
 
-				// Removing duplicate references
-				transRecords.forEach(record -> {
-					if (!uniqueRefSet.add(record.getReference())) {
-						uniqueRefSet.remove(record.getReference());
-					}
-				});
+				List<Long> duplicateRefList = transRecords.stream()
+						.filter(record -> !uniqueRefSet.add(record.getReference())).map(map -> map.getReference())
+						.collect(Collectors.toList());
 
 				failedRecords = transRecords.stream()
-						.filter(r -> !uniqueRefSet.contains(r.getReference()) || (r.getEndBalance()) != Double
+						.filter(r -> duplicateRefList.contains(r.getReference()) || (r.getEndBalance()) != Double
 								.parseDouble(doubleformat.format((r.getStartBalance() + r.getMutation()))))
 						.map(map -> map.getReference() + ", " + map.getDescription()).collect(Collectors.toList());
 				return failedRecords;
